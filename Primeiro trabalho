@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Controle Jauense</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4CAF50">
+
+<style>
+
+body{
+font-family:Arial;
+background:linear-gradient(#4CAF50,#2e7d32);
+margin:0;
+padding:20px;
+color:white;
+}
+
+.container{
+background:white;
+color:black;
+padding:20px;
+border-radius:15px;
+max-width:400px;
+margin:auto;
+}
+
+input{
+width:100%;
+padding:10px;
+margin:5px 0;
+}
+
+button{
+width:100%;
+padding:10px;
+background:#4CAF50;
+color:white;
+border:none;
+border-radius:5px;
+}
+
+.lista{
+margin-top:15px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Controle Jauense</h2>
+
+<h3>Cadastrar Produto</h3>
+
+<input id="nome" placeholder="Nome do produto">
+<input id="preco" type="number" placeholder="Preço">
+<input id="estoque" type="number" placeholder="Estoque">
+
+<button onclick="cadastrar()">Cadastrar</button>
+
+<h3>Registrar venda</h3>
+
+<input id="venda" placeholder="Nome do produto">
+
+<button onclick="vender()">Registrar venda</button>
+
+<h3 id="total">Total vendido: R$ 0</h3>
+
+<div class="lista" id="lista"></div>
+
+</div>
+
+<script>
+
+let produtos=JSON.parse(localStorage.getItem("produtos"))||[];
+let total=Number(localStorage.getItem("total"))||0;
+
+function salvar(){
+
+localStorage.setItem("produtos",JSON.stringify(produtos));
+localStorage.setItem("total",total);
+
+}
+
+function cadastrar(){
+
+let nome=document.getElementById("nome").value;
+let preco=Number(document.getElementById("preco").value);
+let estoque=Number(document.getElementById("estoque").value);
+
+produtos.push({nome,preco,estoque});
+
+salvar();
+mostrar();
+
+}
+
+function vender(){
+
+let nome=document.getElementById("venda").value;
+
+let p=produtos.find(x=>x.nome==nome);
+
+if(p && p.estoque>0){
+
+p.estoque--;
+total+=p.preco;
+
+}
+
+salvar();
+mostrar();
+
+}
+
+function mostrar(){
+
+document.getElementById("total").innerText="Total vendido: R$ "+total;
+
+let html="";
+
+produtos.forEach(p=>{
+
+html+=p.nome+" | estoque: "+p.estoque+"<br>";
+
+});
+
+document.getElementById("lista").innerHTML=html;
+
+}
+
+mostrar();
+
+</script>
+
+<script>
+
+if("serviceWorker" in navigator){
+
+navigator.serviceWorker.register("service-worker.js");
+
+}
+
+</script>
+
+</body>
+</html>
